@@ -47,9 +47,13 @@ public class Animations_Plugin extends DestinationsAddon {
             if (pluginReference.npcSettings.containsKey(npc.getId())) {
                 if (pluginReference.npcSettings.get(npc.getId()).locations.containsKey(locationSetting.LocationIdent)) {
                     if (message.toLowerCase().contains("<animations.setting>")) {
-                        enAction npcSetting = pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent);
+                        enAction npcSetting = pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).action;
                         message = message.replaceAll("<animations\\.setting>", pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", "result_messages." + npcSetting, "")[0]);
                     }
+                    if (message.toLowerCase().contains("<animations.argument>")) {
+                        message = message.replaceAll("<animations\\.argument>", pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", "result_messages." + pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).arg1, "")[0]);
+                    }
+
                 }
             }
         }
@@ -76,10 +80,15 @@ public class Animations_Plugin extends DestinationsAddon {
         if (npcAnimation.locations.containsKey(location.LocationIdent))
             npcAnimation.locations.remove(location.LocationIdent);
 
-        if (enAction.valueOf(storageKey.getString("Animations.Setting", "")) != null) {
-            npcAnimation.locations.put(location.LocationIdent, enAction.valueOf(storageKey.getString("Animations.Setting", "")));
-        } else
-            npcAnimation.locations.put(location.LocationIdent, enAction.NONE);
+        Animations_Location locSetting = new Animations_Location();
+        
+        if (enAction.valueOf(storageKey.getString("Animations.Setting", "")) != null) 
+            locSetting.action = enAction.valueOf(storageKey.getString("Animations.Setting", ""));
+        
+        if (enAction.valueOf(storageKey.getString("Animations.Variable.1", "")) != null) 
+            locSetting.arg1 = storageKey.getString("Animations.Variable.1", "");
+        
+        npcAnimation.locations.put(location.LocationIdent, locSetting);
     }
 
     @Override
@@ -89,9 +98,13 @@ public class Animations_Plugin extends DestinationsAddon {
         if (!pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent))
             return;
 
-        if (pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent)) {
-            storageKey.setString("Animations.Setting", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).toString());
-        }
+        if (pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent)) 
+            storageKey.setString("Animations.Setting", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).action.toString());
+        
+        if (pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent)) 
+            storageKey.setString("Animations.Variable.1", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).arg1.toString());
+
+        
     }
 
     @Override
@@ -102,7 +115,7 @@ public class Animations_Plugin extends DestinationsAddon {
                     if (!pluginReference.monitoredNPC.containsKey(npc.getId())) {
 
                         pluginReference.getDestinationsPlugin.getMessageManager.debugMessage(Level.INFO, "Animations_Plugin.onNavigationReached|NPC:" + npc.getId() + "|Monitored location reached, assigning as monitor");
-                        switch (pluginReference.npcSettings.get(npc.getId()).locations.get(trait.currentLocation.LocationIdent)) {
+                        switch (pluginReference.npcSettings.get(npc.getId()).locations.get(trait.currentLocation.LocationIdent).action) {
                         case NONE:
                         case CHEST:
                         case CHEST_FILL:
@@ -110,6 +123,7 @@ public class Animations_Plugin extends DestinationsAddon {
                         case FISH:
                         case FISH_ADD:
                         case SLEEP:
+                        case SWING:
                         case SIT:
                             trait.setMonitoringPlugin(pluginReference.getPluginReference, trait.currentLocation);
                             pluginReference.monitoredNPC.put(npc.getId(), trait.currentLocation.LocationIdent);
@@ -136,7 +150,7 @@ public class Animations_Plugin extends DestinationsAddon {
             if (pluginReference.npcSettings.get(npc.getId()).locations.containsKey(destination.LocationIdent)) {
                 if (!pluginReference.monitoredNPC.containsKey(npc.getId())) {
                     pluginReference.getDestinationsPlugin.getMessageManager.debugMessage(Level.INFO, "Animations_Plugin.onNavigationReached|NPC:" + npc.getId() + "|Monitored location reached, assigning as monitor");
-                    switch (pluginReference.npcSettings.get(npc.getId()).locations.get(trait.currentLocation.LocationIdent)) {
+                    switch (pluginReference.npcSettings.get(npc.getId()).locations.get(trait.currentLocation.LocationIdent).action) {
                     case CHEST:
                         pluginReference.getProcessingClass.openChest(npc, pluginReference.npcSettings.get(npc.getId()), false);
                         break;
@@ -146,6 +160,7 @@ public class Animations_Plugin extends DestinationsAddon {
                     case FISH:
                     case FISH_ADD:
                     case SLEEP:
+                    case SWING:
                     case SIT:
                         // Event triggered
                         trait.setMonitoringPlugin(pluginReference.getPluginReference, destination);

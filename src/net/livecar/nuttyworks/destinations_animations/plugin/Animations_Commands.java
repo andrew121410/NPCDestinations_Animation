@@ -14,9 +14,16 @@ import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandInfo;
 import net.livecar.nuttyworks.npc_destinations.api.Destination_Setting;
 
 public class Animations_Commands {
-    @CommandInfo(name = "locanimate", group = "External Plugin Commands", languageFile = "animations", helpMessage = "command_locanimate_help", arguments = { "#", "sleep|chest|chest_fill|fish|fish_add|sit|clear" }, permission = {
-            "npcdestinations.editall.locanimate", "npcdestinations.editown.locanimate" }, allowConsole = true, minArguments = 2, maxArguments = 2)
-    public boolean npcDest_locSentinel(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
+    @CommandInfo(name = "locanimate", 
+            group = "External Plugin Commands", 
+            languageFile = "animations", 
+            helpMessage = "command_locanimate_help", 
+            arguments = { "#", "sleep|chest|chest_fill|fish|fish_add|sit|swing|clear" }, 
+            permission = {"npcdestinations.editall.locanimate", "npcdestinations.editown.locanimate" }, 
+            allowConsole = true, 
+            minArguments = 2, 
+            maxArguments = 3)
+    public boolean npcDest_locAnimation(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
 
         if (inargs.length < 2) {
             destRef.getMessageManager.sendMessage("animations", sender, "messages.command_badargs");
@@ -62,7 +69,15 @@ public class Animations_Commands {
         if (EnumUtils.isValidEnum(enAction.class, inargs[2].toUpperCase())) {
             if (animSetting.locations.containsKey(destSetting.LocationIdent))
                 animSetting.locations.remove(destSetting.LocationIdent);
-            animSetting.locations.put(destSetting.LocationIdent, enAction.valueOf(inargs[2].toUpperCase()));
+
+            Animations_Location locArg = new Animations_Location();
+
+            locArg.action = enAction.valueOf(inargs[2].toUpperCase());
+            if (inargs.length > 3)
+                locArg.arg1 = inargs[3];
+
+            animSetting.locations.put(destSetting.LocationIdent, locArg);
+
             if (addonReference.pluginReference.monitoredNPC.containsKey(npc.getId()))
                 addonReference.pluginReference.monitoredNPC.remove(npc.getId());
 

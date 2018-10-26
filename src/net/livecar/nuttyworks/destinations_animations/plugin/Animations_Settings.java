@@ -12,20 +12,20 @@ import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
 
 public class Animations_Settings {
 
-    public int                     npcID;
-    public HashMap<UUID, enAction> locations;
-    public Location                currentDestination;
-    public NPCDestinationsTrait    destinationsTrait;
-    public Date                    lastAction;
-    public Date                    nextAnimationTime;
+    public int                                npcID;
+    public HashMap<UUID, Animations_Location> locations;
+    public Location                           currentDestination;
+    public NPCDestinationsTrait               destinationsTrait;
+    public Date                               lastAction;
+    public Date                               nextAnimationTime;
 
-    public FishHook                fishHook;
-    public boolean                 isSleeping;
-    public Date                    castTime;
-    public Location                hookDestination;
+    public FishHook                           fishHook;
+    public boolean                            isSleeping;
+    public Date                               castTime;
+    public Location                           hookDestination;
 
     public Animations_Settings() {
-        locations = new HashMap<UUID, enAction>();
+        locations = new HashMap<UUID, Animations_Location>();
         lastAction = new Date();
         nextAnimationTime = new Date();
     }
@@ -34,7 +34,7 @@ public class Animations_Settings {
         this.npcID = npcid;
         NPC npc = CitizensAPI.getNPCRegistry().getById(npcid);
         destinationsTrait = npc.getTrait(NPCDestinationsTrait.class);
-        locations = new HashMap<UUID, enAction>();
+        locations = new HashMap<UUID, Animations_Location>();
     }
 
     public Integer getNPCID() {
@@ -42,6 +42,6 @@ public class Animations_Settings {
     }
 
     public enum enAction {
-        NONE, SLEEP, CHEST, CHEST_FILL, FISH_ADD, FISH, SIT,
+        NONE, SLEEP, CHEST, CHEST_FILL, FISH_ADD, FISH, SIT, SWING,
     }
 }

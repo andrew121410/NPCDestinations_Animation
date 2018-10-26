@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -54,7 +55,7 @@ public class Animations_Processing {
                 continue;
             }
 
-            switch (animationSettings.locations.get(entry.getValue())) {
+            switch (animationSettings.locations.get(entry.getValue()).action) {
             case FISH:
                 Destinations_Animations.Instance.nmsFishing.FishingCycle(npc, animationSettings, false);
                 continue;
@@ -69,12 +70,30 @@ public class Animations_Processing {
             case SIT:
                 sitNPC(npc, animationSettings);
                 continue;
+            case SWING:
+                swingNPC(npc, animationSettings,animationSettings.locations.get(entry.getValue()));
+                continue;
             default:
                 continue;
             }
         }
     }
 
+    public void swingNPC(NPC npc, Animations_Settings animationSettings, Animations_Location curLoc) {
+        
+        int interval = 500;
+        if (StringUtils.isNumeric(curLoc.arg1))
+            interval = Integer.parseInt(curLoc.arg1);
+        
+        if ((curLoc.lastAction.getTime()+interval < new Date().getTime()))
+        {
+            curLoc.lastAction = new Date();
+            net.citizensnpcs.util.Util.assumePose(npc.getEntity(),  animationSettings.destinationsTrait.currentLocation.destination.clone().getYaw(), animationSettings.destinationsTrait.currentLocation.destination.clone().getPitch());
+            net.citizensnpcs.util.PlayerAnimation.ARM_SWING.play((Player) npc.getEntity());
+        }
+    }
+
+    
     public void sitNPC(NPC npc, Animations_Settings animationSettings) {
         if (sittingNPC.containsKey(npc.getEntity().getUniqueId()))
             return;
