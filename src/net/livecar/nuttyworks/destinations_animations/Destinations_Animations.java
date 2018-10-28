@@ -16,6 +16,7 @@ import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant;
 import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant;
 import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant;
 import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant;
+import net.livecar.nuttyworks.destinations_animations.nms.SoundAssistant;
 import net.livecar.nuttyworks.destinations_animations.plugin.Animations_Settings;
 import net.livecar.nuttyworks.destinations_animations.plugin.Animations_Commands;
 import net.livecar.nuttyworks.destinations_animations.plugin.Animations_Plugin;
@@ -35,6 +36,7 @@ public class Destinations_Animations {
     public BedAssistant                      nmsSleeping           = null;
     public ChestAssistant                    nmsChest              = null;
     public SitAssistant                      nmsSit                = null;
+    public SoundAssistant                    nmsSound              = null;
     public DestAnimations_Plugin             getPluginReference    = null;
     public Animations_Processing             getProcessingClass    = null;
     public Animations_Plugin                 getAnimationPlugin    = null;

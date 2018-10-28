@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -81,15 +80,15 @@ public class Animations_Processing {
 
     public void swingNPC(NPC npc, Animations_Settings animationSettings, Animations_Location curLoc) {
         
-        int interval = 500;
-        if (StringUtils.isNumeric(curLoc.arg1))
-            interval = Integer.parseInt(curLoc.arg1);
-        
-        if ((curLoc.lastAction.getTime()+interval < new Date().getTime()))
+        if ((curLoc.lastAction.getTime() + curLoc.interval < new Date().getTime()))
         {
             curLoc.lastAction = new Date();
             net.citizensnpcs.util.Util.assumePose(npc.getEntity(),  animationSettings.destinationsTrait.currentLocation.destination.clone().getYaw(), animationSettings.destinationsTrait.currentLocation.destination.clone().getPitch());
             net.citizensnpcs.util.PlayerAnimation.ARM_SWING.play((Player) npc.getEntity());
+            if (curLoc.sound != null)
+            {
+                pluginReference.nmsSound.PlaySound(npc.getEntity().getLocation(), curLoc);
+            }
         }
     }
 

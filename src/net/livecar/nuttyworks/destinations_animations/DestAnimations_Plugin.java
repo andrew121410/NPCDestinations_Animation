@@ -9,42 +9,7 @@ import org.bukkit.event.EventHandler;
 import net.citizensnpcs.api.event.CitizensDisableEvent;
 import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.event.NPCDespawnEvent;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant_1_10_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant_1_11_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant_1_12_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant_1_13_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant_1_13_R2;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant_1_8_R3;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant_1_9_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.BedAssistant_1_9_R2;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant_1_10_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant_1_11_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant_1_12_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant_1_13_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant_1_13_R2;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant_1_8_R3;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant_1_9_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.ChestAssistant_1_9_R2;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant_1_10_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant_1_11_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant_1_12_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant_1_13_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant_1_13_R2;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant_1_8_R3;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant_1_9_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.FishingAssistant_1_9_R2;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant_1_10_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant_1_11_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant_1_12_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant_1_13_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant_1_13_R2;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant_1_8_R3;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant_1_9_R1;
-import net.livecar.nuttyworks.destinations_animations.nms.SitAssistant_1_9_R2;
+import net.livecar.nuttyworks.destinations_animations.nms.*;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 
 public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin implements org.bukkit.event.Listener {
@@ -88,41 +53,43 @@ public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin imp
             Destinations_Animations.Instance.nmsSleeping = (BedAssistant) new BedAssistant_1_8_R3();
             Destinations_Animations.Instance.nmsChest = (ChestAssistant) new ChestAssistant_1_8_R3();
             Destinations_Animations.Instance.nmsSit = (SitAssistant) new SitAssistant_1_8_R3();
+            Destinations_Animations.Instance.nmsSound = (SoundAssistant) new SoundAssistant_1_8_R3();
         } else if (getClass().getPackage().getName().endsWith("v1_9_R1")) {
             Destinations_Animations.Instance.nmsFishing = (FishingAssistant) new FishingAssistant_1_9_R1(Destinations_Animations.Instance.hookGravity);
             Destinations_Animations.Instance.nmsSleeping = (BedAssistant) new BedAssistant_1_9_R1();
             Destinations_Animations.Instance.nmsChest = (ChestAssistant) new ChestAssistant_1_9_R1();
             Destinations_Animations.Instance.nmsSit = (SitAssistant) new SitAssistant_1_9_R1();
+            Destinations_Animations.Instance.nmsSound = (SoundAssistant) new SoundAssistant_1_9_R1();
         } else if (getServer().getClass().getPackage().getName().endsWith("v1_9_R2")) {
             Destinations_Animations.Instance.nmsFishing = (FishingAssistant) new FishingAssistant_1_9_R2(Destinations_Animations.Instance.hookGravity);
             Destinations_Animations.Instance.nmsSleeping = (BedAssistant) new BedAssistant_1_9_R2();
             Destinations_Animations.Instance.nmsChest = (ChestAssistant) new ChestAssistant_1_9_R2();
             Destinations_Animations.Instance.nmsSit = (SitAssistant) new SitAssistant_1_9_R2();
+            Destinations_Animations.Instance.nmsSound = (SoundAssistant) new SoundAssistant_1_9_R2();
         } else if (getServer().getClass().getPackage().getName().endsWith("v1_10_R1")) {
             Destinations_Animations.Instance.nmsFishing = (FishingAssistant) new FishingAssistant_1_10_R1(Destinations_Animations.Instance.hookGravity);
             Destinations_Animations.Instance.nmsSleeping = (BedAssistant) new BedAssistant_1_10_R1();
             Destinations_Animations.Instance.nmsChest = (ChestAssistant) new ChestAssistant_1_10_R1();
             Destinations_Animations.Instance.nmsSit = (SitAssistant) new SitAssistant_1_10_R1();
+            Destinations_Animations.Instance.nmsSound = (SoundAssistant) new SoundAssistant_1_10_R1();
         } else if (getServer().getClass().getPackage().getName().endsWith("v1_11_R1")) {
             Destinations_Animations.Instance.nmsFishing = (FishingAssistant) new FishingAssistant_1_11_R1(Destinations_Animations.Instance.hookGravity);
             Destinations_Animations.Instance.nmsSleeping = (BedAssistant) new BedAssistant_1_11_R1();
             Destinations_Animations.Instance.nmsChest = (ChestAssistant) new ChestAssistant_1_11_R1();
             Destinations_Animations.Instance.nmsSit = (SitAssistant) new SitAssistant_1_11_R1();
+            Destinations_Animations.Instance.nmsSound = (SoundAssistant) new SoundAssistant_1_11_R1();
         } else if (getServer().getClass().getPackage().getName().endsWith("v1_12_R1")) {
             Destinations_Animations.Instance.nmsFishing = (FishingAssistant) new FishingAssistant_1_12_R1(Destinations_Animations.Instance.hookGravity);
             Destinations_Animations.Instance.nmsSleeping = (BedAssistant) new BedAssistant_1_12_R1();
             Destinations_Animations.Instance.nmsChest = (ChestAssistant) new ChestAssistant_1_12_R1();
             Destinations_Animations.Instance.nmsSit = (SitAssistant) new SitAssistant_1_12_R1();
-        } else if (getServer().getClass().getPackage().getName().endsWith("v1_13_R1")) {
-            Destinations_Animations.Instance.nmsFishing = (FishingAssistant) new FishingAssistant_1_13_R1(Destinations_Animations.Instance.hookGravity);
-            Destinations_Animations.Instance.nmsSleeping = (BedAssistant) new BedAssistant_1_13_R1();
-            Destinations_Animations.Instance.nmsChest = (ChestAssistant) new ChestAssistant_1_13_R1();
-            Destinations_Animations.Instance.nmsSit = (SitAssistant) new SitAssistant_1_13_R1();
+            Destinations_Animations.Instance.nmsSound = (SoundAssistant) new SoundAssistant_1_12_R1();
         } else if (getServer().getClass().getPackage().getName().endsWith("v1_13_R2")) {
             Destinations_Animations.Instance.nmsFishing = (FishingAssistant) new FishingAssistant_1_13_R2(Destinations_Animations.Instance.hookGravity);
             Destinations_Animations.Instance.nmsSleeping = (BedAssistant) new BedAssistant_1_13_R2();
             Destinations_Animations.Instance.nmsChest = (ChestAssistant) new ChestAssistant_1_13_R2();
             Destinations_Animations.Instance.nmsSit = (SitAssistant) new SitAssistant_1_13_R2();
+            Destinations_Animations.Instance.nmsSound = (SoundAssistant) new SoundAssistant_1_13_R2();
         } else {
             // Unknown version, abort loading of this plugin
             Destinations_Animations.Instance.getDestinationsPlugin.getMessageManager.consoleMessage(this, "animations", "console_messages.plugin_unknownversion");

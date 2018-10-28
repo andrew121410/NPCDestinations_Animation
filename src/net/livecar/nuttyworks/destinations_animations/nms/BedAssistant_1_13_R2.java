@@ -65,7 +65,7 @@ public class BedAssistant_1_13_R2 implements BedAssistant {
                 if (!(destTrait.currentLocation.destination.getBlock().getBlockData() instanceof Bed)) {
                     thisNPC.teleport(nLoc.add(0.0, 0.5, 0.0), TeleportCause.PLUGIN);
                 } else {
-                    thisNPC.teleport(nLoc.add(0.0, 0.2, 0.0), TeleportCause.PLUGIN);
+                    //thisNPC.teleport(nLoc.add(0.0, 0.2, 0.0), TeleportCause.PLUGIN);
                 }
             }
         }.runTaskLater(DestinationsPlugin.Instance, 25L);

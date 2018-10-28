@@ -3,10 +3,13 @@ package net.livecar.nuttyworks.destinations_animations.plugin;
 import java.util.logging.Level;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 
 import net.citizensnpcs.api.npc.NPC;
+import net.livecar.nuttyworks.destinations_animations.plugin.Animations_Location.enSoundCategory;
 import net.livecar.nuttyworks.destinations_animations.plugin.Animations_Settings.enAction;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
@@ -14,15 +17,16 @@ import net.livecar.nuttyworks.npc_destinations.listeners.commands.CommandInfo;
 import net.livecar.nuttyworks.npc_destinations.api.Destination_Setting;
 
 public class Animations_Commands {
-    @CommandInfo(name = "locanimate", 
-            group = "External Plugin Commands", 
-            languageFile = "animations", 
-            helpMessage = "command_locanimate_help", 
-            arguments = { "#", "sleep|chest|chest_fill|fish|fish_add|sit|swing|clear" }, 
-            permission = {"npcdestinations.editall.locanimate", "npcdestinations.editown.locanimate" }, 
-            allowConsole = true, 
-            minArguments = 2, 
-            maxArguments = 3)
+    @CommandInfo(
+            name = "locanimate",
+            group = "External Plugin Commands",
+            languageFile = "animations",
+            helpMessage = "command_locanimate_help",
+            arguments = { "#", "<animation>", "#", "<sound>", "volume", "pitch", "<soundcategory>"},
+            permission = { "npcdestinations.editall.locanimate", "npcdestinations.editown.locanimate" },
+            allowConsole = true,
+            minArguments = 2,
+            maxArguments = 7)
     public boolean npcDest_locAnimation(DestinationsPlugin destRef, CommandSender sender, NPC npc, String[] inargs, boolean isOwner, NPCDestinationsTrait destTrait) {
 
         if (inargs.length < 2) {
@@ -66,16 +70,78 @@ public class Animations_Commands {
             return true;
         }
 
-        if (EnumUtils.isValidEnum(enAction.class, inargs[2].toUpperCase())) {
+        if (inargs[2].equalsIgnoreCase("clear")) {
+            if (animSetting.locations.containsKey(destSetting.LocationIdent))
+                animSetting.locations.remove(destSetting.LocationIdent);
+            if (addonReference.pluginReference.monitoredNPC.containsKey(npc.getId()))
+                addonReference.pluginReference.monitoredNPC.remove(npc.getId());
+            addonReference.pluginReference.getDestinationsPlugin.getMessageManager.sendMessage("animations", sender, "messages.command_removed", destTrait, destSetting, Material.AIR);
+            return true;
+        }
+        
+        enAction animation = enAction.NONE;
+        if (EnumUtils.isValidEnum(enAction.class, inargs[2].toUpperCase()))
+            animation = enAction.valueOf(inargs[2].toUpperCase());
+        else {
+            addonReference.pluginReference.getDestinationsPlugin.getMessageManager.sendMessage("animations", sender, "messages.command_badargs", destTrait, destSetting);
+            return true;
+        }
+
+        switch (animation) {
+        case SWING:
+            // [index] swing <interval> <sound> <volume> <pitch> <category>
+            // [locanimate, 1, swing, 500]
             if (animSetting.locations.containsKey(destSetting.LocationIdent))
                 animSetting.locations.remove(destSetting.LocationIdent);
 
             Animations_Location locArg = new Animations_Location();
 
-            locArg.action = enAction.valueOf(inargs[2].toUpperCase());
-            if (inargs.length > 3)
-                locArg.arg1 = inargs[3];
+            locArg.action = enAction.SWING;
+            
+            //Interval
+            if (inargs.length > 3 && StringUtils.isNumeric(inargs[3]))
+                locArg.interval = Integer.parseInt(inargs[3]);
 
+            //Sound name
+            if (inargs.length > 4)
+            {
+                //apache uses try/catch. Faster to just loop this enum as it's small
+                for (Sound snd : Sound.values()) {
+                    if (snd.name().equals(inargs[4].toUpperCase())) {
+                        locArg.sound = snd;
+                    }
+                }
+                if (locArg.sound == null)
+                {
+                    addonReference.pluginReference.getDestinationsPlugin.getMessageManager.sendMessage("animations", sender, "messages.command_badargs", destTrait, destSetting);
+                    return true;
+                }
+            }
+
+            //volume
+            if (inargs.length > 5 && StringUtils.isNumeric(inargs[5]))
+                locArg.volume = Float.parseFloat(inargs[5]);
+            
+            //pitch
+            if (inargs.length > 6 && StringUtils.isNumeric(inargs[6]))
+                locArg.pitch = Float.parseFloat(inargs[6]);
+            
+            //Sound category
+            if (inargs.length > 7)
+            {
+                //apache uses try/catch. Faster to just loop this enum as it's small
+                for (enSoundCategory sndCat : enSoundCategory.values()) {
+                    if (sndCat.name().equals(inargs[7].toUpperCase())) {
+                        locArg.soundCategory = sndCat;
+                    }
+                }
+                if (locArg.soundCategory == null)
+                {
+                    addonReference.pluginReference.getDestinationsPlugin.getMessageManager.sendMessage("animations", sender, "messages.command_badargs", destTrait, destSetting);
+                    return true;
+                }
+            }
+            
             animSetting.locations.put(destSetting.LocationIdent, locArg);
 
             if (addonReference.pluginReference.monitoredNPC.containsKey(npc.getId()))
@@ -85,16 +151,36 @@ public class Animations_Commands {
             if (destSetting.LocationIdent.equals(destTrait.currentLocation.LocationIdent) && !addonReference.pluginReference.monitoredNPC.containsKey(npc.getId()))
                 addonReference.pluginReference.monitoredNPC.put(npc.getId(), destSetting.LocationIdent);
             return true;
-        } else if (inargs[2].equalsIgnoreCase("clear")) {
+        case CHEST:
+        case CHEST_FILL:
+        case FISH:
+        case FISH_ADD:
+        case SIT:
+        case SLEEP:
             if (animSetting.locations.containsKey(destSetting.LocationIdent))
                 animSetting.locations.remove(destSetting.LocationIdent);
+
+            Animations_Location newLocSetting = new Animations_Location();
+
+            newLocSetting.action = enAction.valueOf(inargs[2].toUpperCase());
+
+            animSetting.locations.put(destSetting.LocationIdent, newLocSetting);
+
             if (addonReference.pluginReference.monitoredNPC.containsKey(npc.getId()))
                 addonReference.pluginReference.monitoredNPC.remove(npc.getId());
-            addonReference.pluginReference.getDestinationsPlugin.getMessageManager.sendMessage("animations", sender, "messages.command_removed", destTrait, destSetting, Material.AIR);
+
+            addonReference.pluginReference.getDestinationsPlugin.getMessageManager.sendMessage("animations", sender, "messages.command_added_active", destTrait, destSetting, Material.AIR);
+            if (destSetting.LocationIdent.equals(destTrait.currentLocation.LocationIdent) && !addonReference.pluginReference.monitoredNPC.containsKey(npc.getId()))
+                addonReference.pluginReference.monitoredNPC.put(npc.getId(), destSetting.LocationIdent);
             return true;
-        } else {
-            addonReference.pluginReference.getDestinationsPlugin.getMessageManager.sendMessage("animations", sender, "messages.command_badargs", destTrait, destSetting);
-            return true;
+        default:
+            break;
+
         }
+        
+        addonReference.pluginReference.getDestinationsPlugin.getMessageManager.sendMessage("animations", sender, "messages.command_badargs", destTrait, destSetting);
+        return true;
+
     }
+
 }

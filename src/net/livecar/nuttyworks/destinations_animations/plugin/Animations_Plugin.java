@@ -1,12 +1,16 @@
 package net.livecar.nuttyworks.destinations_animations.plugin;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.util.DataKey;
 import net.livecar.nuttyworks.destinations_animations.Destinations_Animations;
+import net.livecar.nuttyworks.destinations_animations.plugin.Animations_Location.enSoundCategory;
 import net.livecar.nuttyworks.destinations_animations.plugin.Animations_Settings.enAction;
 import net.livecar.nuttyworks.npc_destinations.api.Destination_Setting;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
@@ -37,8 +41,66 @@ public class Animations_Plugin extends DestinationsAddon {
 
     @Override
     public String getDestinationHelp(NPC npc, NPCDestinationsTrait npcTrait, Destination_Setting location) {
-        String[] response = pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", null, "messages.plugin_destination", npcTrait, location, npc, null, 0);
-        return response[0];
+        String[] response = new String[0];
+
+        try {
+
+            if (!pluginReference.npcSettings.containsKey(npc.getId())) {
+                response = pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", null, "messages.plugin_destination_generic", npcTrait, location, npc, null, 0);
+                return response[0];
+            } else {
+                Animations_Location animSetting = pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent);
+                if (animSetting == null) {
+                    response = pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", null, "messages.plugin_destination_generic", npcTrait, location, npc, null, 0);
+                    return response[0];
+                }
+
+                switch (animSetting.action) {
+                case SWING:
+                    response = pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", null, "messages.plugin_destination_swing", npcTrait, location, npc, null, 0);
+                    break;
+                case CHEST:
+                case CHEST_FILL:
+                case FISH:
+                case FISH_ADD:
+                case NONE:
+                case SIT:
+                case SLEEP:
+                default:
+                    response = pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", null, "messages.plugin_destination_generic", npcTrait, location, npc, null, 0);
+                    break;
+                }
+            }
+            return response[0];
+        } catch (Exception err) {
+            err.printStackTrace();
+            return response[0];
+        }
+    }
+
+    @Override
+    public List<String> parseTabItem(String item, String priorArg) {
+        List<String> results = new ArrayList<String>();
+
+        if (item.equalsIgnoreCase("<animation>")) {
+            for (enAction action : enAction.values()) {
+                results.add(String.valueOf(action.name()));
+            }
+        }
+        
+        if (item.equalsIgnoreCase("<sound>")) {
+            for (Sound sound : Sound.values()) {
+                results.add(String.valueOf(sound.name()));
+            }
+        }
+
+        if (item.equalsIgnoreCase("<soundcategory>")) {
+            for (enSoundCategory soundCat : enSoundCategory.values()) {
+                results.add(String.valueOf(soundCat.name()));
+            }
+        }
+
+        return results;
     }
 
     @Override
@@ -50,13 +112,31 @@ public class Animations_Plugin extends DestinationsAddon {
                         enAction npcSetting = pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).action;
                         message = message.replaceAll("<animations\\.setting>", pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", "result_messages." + npcSetting, "")[0]);
                     }
-                    if (message.toLowerCase().contains("<animations.argument>")) {
-                        message = message.replaceAll("<animations\\.argument>", pluginReference.getDestinationsPlugin.getMessageManager.buildMessage("animations", "result_messages." + pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).arg1, "")[0]);
+                    if (message.toLowerCase().contains("<animations.interval>")) {
+                        message = message.replaceAll("<animations\\.interval>", Integer.toString(pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).interval));
                     }
-
+                    if (message.toLowerCase().contains("<animations.sound>")) {
+                        if (pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).sound == null)
+                            message = message.replaceAll("<animations\\.sound>", "");
+                        else
+                            message = message.replaceAll("<animations\\.sound>", pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).sound.toString());
+                    }
+                    if (message.toLowerCase().contains("<animations.volume>")) {
+                        message = message.replaceAll("<animations\\.volume>", Float.toString(pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).volume));
+                    }
+                    if (message.toLowerCase().contains("<animations.pitch>")) {
+                        message = message.replaceAll("<animations\\.pitch>", Float.toString(pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).pitch));
+                    }
+                    if (message.toLowerCase().contains("<animations.category>")) {
+                        if (pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).soundCategory == null)
+                            message = message.replaceAll("<animations\\.category>", "");
+                        else
+                            message = message.replaceAll("<animations\\.category>", pluginReference.npcSettings.get(npc.getId()).locations.get(locationSetting.LocationIdent).soundCategory.toString());
+                    }
                 }
             }
         }
+
         if (message.toLowerCase().contains("<animations.setting>"))
             message = message.replaceAll("<animations\\.setting>", "Not Set");
 
@@ -81,13 +161,45 @@ public class Animations_Plugin extends DestinationsAddon {
             npcAnimation.locations.remove(location.LocationIdent);
 
         Animations_Location locSetting = new Animations_Location();
-        
-        if (enAction.valueOf(storageKey.getString("Animations.Setting", "")) != null) 
-            locSetting.action = enAction.valueOf(storageKey.getString("Animations.Setting", ""));
-        
-        if (enAction.valueOf(storageKey.getString("Animations.Variable.1", "")) != null) 
-            locSetting.arg1 = storageKey.getString("Animations.Variable.1", "");
-        
+
+        if (enAction.valueOf(storageKey.getString("Animations.Setting", "")) != null)
+            locSetting.action = enAction.valueOf(storageKey.getString("Animations.Setting", "NONE"));
+
+        // Remove after a couple versions.
+        if (!storageKey.getString("Animations.Variable1", "").equals("")) {
+            locSetting.interval = Integer.parseInt(storageKey.getString("Animations.Variable1", ""));
+        }
+
+        if (!storageKey.getString("Animations.Interval", "").equals("")) {
+            locSetting.interval = Integer.parseInt(storageKey.getString("Animations.Interval", ""));
+        }
+
+        if (!storageKey.getString("Animations.Sound", "").equals("")) {
+            String soundStr = storageKey.getString("Animations.Sound", "");
+            for (Sound snd : Sound.values()) {
+                if (snd.name().equals(soundStr.toUpperCase())) {
+                    locSetting.sound = snd;
+                }
+            }
+        }
+
+        if (!storageKey.getString("Animations.Category", "").equals("")) {
+            String soundStr = storageKey.getString("Animations.Category", "");
+            for (enSoundCategory sndCat : enSoundCategory.values()) {
+                if (sndCat.name().equals(soundStr.toUpperCase())) {
+                    locSetting.soundCategory = sndCat;
+                }
+            }
+        }
+
+        if (!storageKey.getString("Animations.Volume", "").equals("")) {
+            locSetting.volume = Float.parseFloat(storageKey.getString("Animations.Volume", "1.0"));
+        }
+
+        if (!storageKey.getString("Animations.Pitch", "").equals("")) {
+            locSetting.pitch = Float.parseFloat(storageKey.getString("Animations.pitch", "0.0"));
+        }
+
         npcAnimation.locations.put(location.LocationIdent, locSetting);
     }
 
@@ -98,13 +210,14 @@ public class Animations_Plugin extends DestinationsAddon {
         if (!pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent))
             return;
 
-        if (pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent)) 
+        if (pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent)) {
             storageKey.setString("Animations.Setting", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).action.toString());
-        
-        if (pluginReference.npcSettings.get(npc.getId()).locations.containsKey(location.LocationIdent)) 
-            storageKey.setString("Animations.Variable.1", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).arg1.toString());
-
-        
+            storageKey.setInt("Animations.Interval", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).interval);
+            storageKey.setString("Animations.Volume", Float.toString(pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).volume));
+            storageKey.setString("Animations.Pitch", Float.toString(pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).pitch));
+            storageKey.setString("Animations.Sound", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).sound.toString());
+            storageKey.setString("Animations.Category", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).soundCategory.toString());
+        }
     }
 
     @Override
@@ -184,9 +297,9 @@ public class Animations_Plugin extends DestinationsAddon {
                     pluginReference.npcSettings.get(Integer.valueOf(npc.getId())).fishHook.remove();
                     pluginReference.npcSettings.get(Integer.valueOf(npc.getId())).fishHook = null;
                 }
-                
+
                 pluginReference.getProcessingClass.undoAnimations(npc);
-                
+
                 if (pluginReference.monitoredNPC.containsKey(Integer.valueOf(npc.getId()))) {
                     pluginReference.getDestinationsPlugin.getMessageManager.debugMessage(Level.INFO, "Animations_Plugin.onNavigationNewDestination|NPC:" + npc.getId() + "|New Location,clearing monitors and releasing control.");
                     trait.unsetMonitoringPlugin();
