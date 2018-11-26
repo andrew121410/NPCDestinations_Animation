@@ -205,11 +205,30 @@ public class VersionBridge_1_13_R2 implements VersionBridge {
             zAxis = 1;
         }
 
-        if (sitLocation.getBlock().getType() == Material.AIR)
-            sitLocation.add(0, -1, 0);
+        if (sitLocation.getBlock().getType() == Material.AIR) {
+            sitLocation.add(0.0D, -1.0D, 0.0D);
+        }
 
-        if (sitLocation.getBlock().getType().toString().toLowerCase().contains("stairs"))
-            sitLocation.add(0, -0.5, 0);
+        if (sitLocation.getBlock().getType().toString().toUpperCase().contains("CARPET")) {
+            sitLocation.add(0.0D, -1.0D, 0.0D);
+        }
+
+        if (sitLocation.getBlock().getType().toString().toLowerCase().contains("stairs")) {
+            sitLocation.add(0.0D, -0.5D, 0.0D);
+        }
+
+        if (DestinationsPlugin.Instance.getMCUtils.isHalfBlock(sitLocation.getBlock().getType())) {
+            switch (DestinationsPlugin.Instance.getMCUtils.getSlabType(sitLocation.getBlock()))
+            {
+                case TOP:
+                    break;
+                case BOTTOM:
+                    sitLocation.add(0.0D, -0.5D, 0.0D);
+                    break;
+                case DOUBLE:
+                    break;
+            }
+        }
 
         final Location faceLocation = animationSettings.destinationsTrait.currentLocation.destination.clone().add(xAxis, 0, zAxis);
         net.citizensnpcs.util.Util.faceLocation(npc.getEntity(), faceLocation);
@@ -238,7 +257,7 @@ public class VersionBridge_1_13_R2 implements VersionBridge {
     @Override
     public void unSitNPC(Sitting_NPC setting) {
         setting.npc.getEntity().eject();
-        setting.npc.teleport(setting.npc.getEntity().getLocation().clone().add(0, 0.5, 0), PlayerTeleportEvent.TeleportCause.PLUGIN);
+        setting.npc.teleport(setting.originalLocation.add(0.0D, 0.5D, 0.0D), PlayerTeleportEvent.TeleportCause.PLUGIN);
         setting.attachedArmorStand.remove();
     }
 

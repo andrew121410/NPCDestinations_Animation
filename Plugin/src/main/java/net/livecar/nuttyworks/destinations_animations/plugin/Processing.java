@@ -403,4 +403,10 @@ public class Processing {
         animationSettings.nextAnimationTime = new Date(System.currentTimeMillis() + 1000l);
     }
 
+    public void CleanupAnimations()
+    {
+        for (Sitting_NPC satNPC : this.sittingNPC.values()) {
+            this.undoAnimations(satNPC.npc);
+        }
+    }
 }

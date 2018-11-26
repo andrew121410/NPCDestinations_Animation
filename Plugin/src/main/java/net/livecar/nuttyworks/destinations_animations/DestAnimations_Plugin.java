@@ -70,14 +70,11 @@ public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin imp
     }
 
     public void onDisable() {
-        if (this.isEnabled()) {
-            if (Destinations_Animations.Instance != null && Destinations_Animations.Instance.getDestinationsPlugin != null) {
-                Destinations_Animations.Instance.getDestinationsPlugin.getMessageManager.debugMessage(Level.CONFIG, "nuDestinationAnimations.onDisable()|Stopping Internal Processes");
-                
-                //Clean up sitting NPCs
-                
-            }
-            Bukkit.getServer().getScheduler().cancelTasks(this);
+        if (Destinations_Animations.Instance != null && Destinations_Animations.Instance.getDestinationsPlugin != null) {
+            Destinations_Animations.Instance.getDestinationsPlugin.getMessageManager.debugMessage(Level.CONFIG, "nuDestinationAnimations.onDisable()|Stopping Internal Processes");
+
+            //Clean up sitting NPCs
+            Destinations_Animations.Instance.getProcessingClass.CleanupAnimations();
         }
     }
 
