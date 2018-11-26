@@ -1,1 +1,11 @@
 language: java
+jobs:
+  include:
+    - stage: GitHub Release
+      script: skip
+      deploy:
+        provider: releases
+        api_key: "$GITHUB_OAUTH_TOKEN"
+        skip_cleanup: true
+        on:
+          tags: true
