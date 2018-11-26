@@ -1,9 +1,20 @@
 language: java
-jobs:
-  include:
-    - stage: GitHub Release
-      script: skip
-      deploy:
-        provider: releases
-        api_key: "$GITHUB_OAUTH_TOKEN"
-        skip_cleanup: true
+jdk: oraclejdk8
+
+before_install: mvn package -DskipTests=true -DbuildNumber=$TRAVIS_BUILD_NUMBER
+
+before_deploy:
+- export TRAVIS_TAG="2.3.$TRAVIS_BUILD_NUMBER"
+- echo "$TRAVIS_TAG" "$TRAVIS_COMMIT"
+- git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT"
+
+deploy:
+  provider: releases
+  tag_name: $TRAVIS_TAG
+  name: $TRAVIS_TAG
+  overwrite: true
+  skip_cleanup: true
+  api_key: $GITHUB_TOKEN
+  file_glob: true
+  file:
+    - target/NPCDestinations-2.3.$TRAVIS_BUILD_NUMBER.jar
