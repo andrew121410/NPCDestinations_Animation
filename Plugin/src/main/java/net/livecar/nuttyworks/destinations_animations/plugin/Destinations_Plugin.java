@@ -215,8 +215,10 @@ public class Destinations_Plugin extends DestinationsAddon {
             storageKey.setInt("Animations.Interval", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).interval);
             storageKey.setString("Animations.Volume", Float.toString(pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).volume));
             storageKey.setString("Animations.Pitch", Float.toString(pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).pitch));
-            storageKey.setString("Animations.Sound", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).sound.toString());
-            storageKey.setString("Animations.Category", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).soundCategory.toString());
+            if (pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).sound != null)
+                storageKey.setString("Animations.Sound", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).sound.toString());
+            if (pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).soundCategory != null)
+                storageKey.setString("Animations.Category", pluginReference.npcSettings.get(npc.getId()).locations.get(location.LocationIdent).soundCategory.toString());
         }
     }
 
