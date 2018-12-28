@@ -41,7 +41,7 @@ public class Processing {
 
             if (animationSettings.destinationsTrait.currentLocation.destination.distanceSquared(npc.getEntity().getLocation()) > 4) {
                 // Need to get the NPC back to it's location
-                if (animationSettings.lastAction == null || animationSettings.lastAction.getTime() + 10000 < new Date().getTime() && !npc.getNavigator().isNavigating()) {
+                if (animationSettings.lastAction == null || (animationSettings.lastAction.getTime() + 10000 < new Date().getTime() && !npc.getNavigator().isNavigating())) {
                     animationSettings.lastAction = new Date();
                     DestinationsPlugin.Instance.getPathClass.addToQueue(npc, animationSettings.destinationsTrait, npc.getEntity().getLocation().add(0.0D, -1.0D, 0.0D), animationSettings.destinationsTrait.currentLocation.destination, 120,
                             new ArrayList<Material>(), 0, true, true, true, "DestinationsAnimations");
