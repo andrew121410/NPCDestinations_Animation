@@ -91,8 +91,6 @@ public class Processing {
         if (sittingNPC.containsKey(npc.getEntity().getUniqueId()))
             return;
 
-        Bukkit.getServer().getLogger().log(Level.INFO, "AnimSit: " + npc.getId());
-
         sittingNPC.put(npc.getEntity().getUniqueId(), pluginReference.getNMSBridge.sitNPC(npc, animationSettings));
     }
 

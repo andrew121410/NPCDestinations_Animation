@@ -237,6 +237,7 @@ public class VersionBridge_1_13_R2 implements VersionBridge {
 
         Sitting_NPC sitNPC = new Sitting_NPC();
         sitNPC.npc = npc;
+        sitNPC.originalLocation = npc.getEntity().getLocation();
         sitNPC.attachedArmorStand = (org.bukkit.entity.Entity) sitStand;
 
         sitStand.setInvulnerable(true);
@@ -256,9 +257,12 @@ public class VersionBridge_1_13_R2 implements VersionBridge {
 
     @Override
     public void unSitNPC(Sitting_NPC setting) {
-        setting.npc.getEntity().eject();
-        setting.npc.teleport(setting.originalLocation.add(0.0D, 0.5D, 0.0D), PlayerTeleportEvent.TeleportCause.PLUGIN);
-        setting.attachedArmorStand.remove();
+        if (setting.npc != null) {
+            setting.npc.getEntity().eject();
+            setting.npc.teleport(setting.originalLocation.add(0.0D, 0.5D, 0.0D), PlayerTeleportEvent.TeleportCause.PLUGIN);
+        }
+        if (setting.attachedArmorStand != null)
+            setting.attachedArmorStand.remove();
     }
 
     @Override
