@@ -61,6 +61,8 @@ public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin imp
             Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_12_R1();
         } else if (getServer().getClass().getPackage().getName().endsWith("v1_13_R2")) {
             Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_13_R2();
+        } else if (getServer().getClass().getPackage().getName().endsWith("v1_14_R1")) {
+            Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_14_R1();
         } else {
             // Unknown version, abort loading of this plugin
             Destinations_Animations.Instance.getDestinationsPlugin.getMessageManager.consoleMessage(this, "animations", "console_messages.plugin_unknownversion");
