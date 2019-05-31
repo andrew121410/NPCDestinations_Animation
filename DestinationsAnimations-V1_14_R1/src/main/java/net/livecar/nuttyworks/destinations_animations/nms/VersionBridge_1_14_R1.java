@@ -230,7 +230,12 @@ public class VersionBridge_1_14_R1 implements VersionBridge {
         for (Player plrEntity : Bukkit.getOnlinePlayers()) {
             if (plrEntity.getWorld() == location.getWorld()) {
                 if (plrEntity.getLocation().distanceSquared(location) < 2116) {
-                    org.bukkit.SoundCategory sndCat = SoundCategory.valueOf(setting.soundCategory.toString());
+                    org.bukkit.SoundCategory sndCat = SoundCategory.PLAYERS;
+                    try {
+                        SoundCategory.valueOf(setting.soundCategory.toString());
+                    } catch (Exception err)
+                    {}
+
                     plrEntity.playSound(location, setting.sound, sndCat, setting.volume, setting.pitch);
                 }
             }
