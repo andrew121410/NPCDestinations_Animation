@@ -36,6 +36,10 @@ public class Processing {
                 continue;
 
             Animations_Settings animationSettings = pluginReference.npcSettings.get(npc.getId());
+
+            if (animationSettings == null || animationSettings.destinationsTrait == null || animationSettings.destinationsTrait.currentLocation == null)
+                continue;
+            
             if (!animationSettings.destinationsTrait.currentLocation.LocationIdent.equals(entry.getValue()))
                 continue;
 
