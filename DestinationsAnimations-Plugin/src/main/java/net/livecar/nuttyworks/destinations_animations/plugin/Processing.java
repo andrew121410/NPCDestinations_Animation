@@ -39,7 +39,7 @@ public class Processing {
 
             if (animationSettings == null || animationSettings.destinationsTrait == null || animationSettings.destinationsTrait.currentLocation == null)
                 continue;
-            
+
             if (!animationSettings.destinationsTrait.currentLocation.LocationIdent.equals(entry.getValue()))
                 continue;
 

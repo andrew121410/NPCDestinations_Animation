@@ -31,7 +31,7 @@ public class Destinations_Animations {
 
     public DestAnimations_Plugin             getPluginReference    = null;
     public Processing                        getProcessingClass    = null;
-    public Destinations_Plugin                 getAnimationPlugin    = null;
+    public Destinations_Plugin               getAnimationPlugin    = null;
 
     // variables
     public int                               entityRadius          = 47 * 47;

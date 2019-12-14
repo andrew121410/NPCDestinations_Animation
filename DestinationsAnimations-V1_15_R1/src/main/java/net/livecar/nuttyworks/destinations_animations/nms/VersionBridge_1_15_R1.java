@@ -6,15 +6,15 @@ import net.livecar.nuttyworks.destinations_animations.plugin.Animations_Settings
 import net.livecar.nuttyworks.destinations_animations.storage.Sitting_NPC;
 import net.livecar.nuttyworks.npc_destinations.DestinationsPlugin;
 import net.livecar.nuttyworks.npc_destinations.citizens.NPCDestinationsTrait;
-import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Bed;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.LivingEntity;
@@ -27,7 +27,7 @@ import org.bukkit.util.Vector;
 
 import java.util.logging.Level;
 
-public class VersionBridge_1_14_R1 implements VersionBridge {
+public class VersionBridge_1_15_R1 implements VersionBridge {
     //Bed Variables
     private final BlockFace[] axis = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
     private final BlockFace[] radial = {BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST};
@@ -61,7 +61,7 @@ public class VersionBridge_1_14_R1 implements VersionBridge {
     @Override
     public void unsleepNPC(NPC npc) {
         EntityPlayer playerEntity = (EntityPlayer) getHandle(((Player) npc.getEntity()));
-        playerEntity.wakeup(false,false,false);
+        playerEntity.wakeup(false,false);
     }
 
     //Chest animation code

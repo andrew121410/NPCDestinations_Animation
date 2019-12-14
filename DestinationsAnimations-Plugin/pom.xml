@@ -69,6 +69,13 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>net.livecar.nuttyworks.destinations_animations</groupId>
+            <artifactId>DestinationsAnimations-v1_15_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
 
 
         <!--Spigot API-->
