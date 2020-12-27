@@ -14,6 +14,16 @@ import java.io.StringWriter;
 import java.util.logging.Level;
 
 public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin implements org.bukkit.event.Listener {
+    
+    public void onDisable() {
+        if (Destinations_Animations.Instance != null && Destinations_Animations.Instance.getDestinationsPlugin != null) {
+            Destinations_Animations.Instance.getDestinationsPlugin.getMessageManager.debugMessage(Level.CONFIG, "nuDestinationAnimations.onDisable()|Stopping Internal Processes");
+            
+            //Clean up sitting NPCs
+            Destinations_Animations.Instance.getProcessingClass.CleanupAnimations();
+        }
+    }
+    
     public void onEnable() {
         if (Bukkit.getServer().getPluginManager().getPlugin("NPC_Destinations") == null) {
             Bukkit.getLogger().log(java.util.logging.Level.INFO, "[" + getDescription().getName() + "] " + "NPCDestinations2 not found, not registering as plugin");
@@ -32,22 +42,23 @@ public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin imp
             Destinations_Animations.Instance = new Destinations_Animations();
             Destinations_Animations.Instance.getPluginReference = this;
             Destinations_Animations.Instance.getDestinationsPlugin = DestinationsPlugin.Instance;
+            // Setup the default paths in the storage folder.
+            Destinations_Animations.Instance.languagePath = new File(DestinationsPlugin.Instance.getDataFolder(), "/Languages/");
+            
+            // Generate the default folders and files.
+            Destinations_Animations.Instance.getDefaultConfigs();
+            
             // Force destinations to refresh its language files.
             Destinations_Animations.Instance.getDestinationsPlugin.getLanguageManager.loadLanguages(true);
         }
-
+        
         // Global references
         Destinations_Animations.Instance.getCitizensPlugin = DestinationsPlugin.Instance.getCitizensPlugin;
-
-        // Setup the default paths in the storage folder.
-        Destinations_Animations.Instance.languagePath = new File(DestinationsPlugin.Instance.getDataFolder(), "/Languages/");
-
-        // Generate the default folders and files.
-        Destinations_Animations.Instance.getDefaultConfigs();
-
+        
+        
         // Register events
         Bukkit.getPluginManager().registerEvents(this, this);
-
+        
         // What version of NMS are we
         if (getServer().getClass().getPackage().getName().endsWith("v1_8_R3")) {
             Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_8_R3();
@@ -61,10 +72,16 @@ public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin imp
             Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_12_R1();
         } else if (getServer().getClass().getPackage().getName().endsWith("v1_13_R2")) {
             Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_13_R2();
-        } else if (getServer().getClass().getPackage().getName().endsWith("v1_14_R1") ||  getServer().getClass().getPackage().getName().endsWith("v1_14_R2")) {
+        } else if (getServer().getClass().getPackage().getName().endsWith("v1_14_R1") || getServer().getClass().getPackage().getName().endsWith("v1_14_R2")) {
             Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_14_R1();
         } else if (getServer().getClass().getPackage().getName().endsWith("v1_15_R1")) {
             Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_15_R1();
+        } else if (getServer().getClass().getPackage().getName().endsWith("v1_16_R1")) {
+            Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_16_R1();
+        } else if (getServer().getClass().getPackage().getName().endsWith("v1_16_R2")) {
+            Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_16_R2();
+        } else if (getServer().getClass().getPackage().getName().endsWith("v1_16_R3")) {
+            Destinations_Animations.Instance.getNMSBridge = new VersionBridge_1_16_R3();
         } else {
             // Unknown version, abort loading of this plugin
             Destinations_Animations.Instance.getDestinationsPlugin.getMessageManager.consoleMessage(this, "animations", "console_messages.plugin_unknownversion");
@@ -72,16 +89,7 @@ public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin imp
             return;
         }
     }
-
-    public void onDisable() {
-        if (Destinations_Animations.Instance != null && Destinations_Animations.Instance.getDestinationsPlugin != null) {
-            Destinations_Animations.Instance.getDestinationsPlugin.getMessageManager.debugMessage(Level.CONFIG, "nuDestinationAnimations.onDisable()|Stopping Internal Processes");
-
-            //Clean up sitting NPCs
-            Destinations_Animations.Instance.getProcessingClass.CleanupAnimations();
-        }
-    }
-
+    
     @EventHandler
     public void CitizensLoaded(final CitizensEnableEvent event) {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -103,7 +111,7 @@ public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin imp
             }
         }, 1L, 5L);
     }
-
+    
     @EventHandler
     public void CitizensDisabled(final CitizensDisableEvent event) {
         Bukkit.getServer().getScheduler().cancelTasks(this);
@@ -116,9 +124,8 @@ public class DestAnimations_Plugin extends org.bukkit.plugin.java.JavaPlugin imp
     }
     
     @EventHandler
-    public void npcDespawned(final NPCDespawnEvent event)
-    {
+    public void npcDespawned(final NPCDespawnEvent event) {
         Destinations_Animations.Instance.getProcessingClass.undoAnimations(event.getNPC());
     }
-
+    
 }
